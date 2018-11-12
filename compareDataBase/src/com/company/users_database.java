@@ -6,8 +6,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class users_database {
 
-
-
     public static boolean compareList (List<Map<String, String>> ds1, List<Map<String, String>> ds2){
         if (ds1.size() != ds2.size()) return false;
 
@@ -32,9 +30,8 @@ public class users_database {
 
     /*
 нет набора полей -  по умолчанию false
-
      */
-    public boolean compareDataBase(String user, String passwd, String dataBase_1, String dataBase_2, String table_1, String table_2, String... column) throws SQLException {
+    public static boolean compareDataBase(String user, String passwd, String dataBase_1, String dataBase_2, String table_1, String table_2, String ... column) throws SQLException {
 
         boolean flag = false;
         if (column.length == 0)
@@ -43,7 +40,7 @@ public class users_database {
         Connection conn1 = null;
         Connection conn2 = null;
         try {
-
+            //System.out.println("Сравниваем");
             conn1 = DriverManager.getConnection(
                     dataBase_1,
                     user, passwd);
@@ -64,14 +61,13 @@ public class users_database {
             Statement stmt1 = conn1.createStatement();
             Statement stmt2 = conn2.createStatement();
 
-            ResultSet resultSet1 = stmt1.executeQuery("SELECT "+column + " FROM "+ table_1);
-            ResultSet resultSet2 = stmt2.executeQuery("SELECT "+column+" FROM " + table_2);
+            ResultSet resultSet1 = stmt1.executeQuery("SELECT * FROM "+ table_1);
+            ResultSet resultSet2 = stmt2.executeQuery("SELECT * FROM " + table_2);
 
 
-            ArrayList<Map<String, String>> list_1 = new ArrayList<>();
-            ArrayList<Map<String, String>> list_2 = new ArrayList<>();
+            ArrayList<Map<String, String>> list_1 = new ArrayList<Map<String, String>>();
+            ArrayList<Map<String, String>> list_2 = new ArrayList<Map<String, String>>();
 
-            //  map_1.stream();
             int i;
             while(resultSet1.next()){
                 HashMap<String, String> map_1 = new HashMap<>();
@@ -90,9 +86,10 @@ public class users_database {
             }
 
 
+
             flag =  compareList(list_1, list_2);
 
-
+            //System.out.println("Сравнили :" + flag );
 
 
         } catch (SQLException e) {
@@ -106,6 +103,18 @@ public class users_database {
 
         }
         return flag;
+    }
+
+
+
+
+
+
+    public static void main(String argc[]) throws SQLException {
+
+
+        System.out.println(compareDataBase("postgres", "thewall1979", "jdbc:postgresql://localhost:5432/postgres", "jdbc:postgresql://localhost:5432/postgres",
+                "addresses", "addresses", "id"));
     }
 
 }
